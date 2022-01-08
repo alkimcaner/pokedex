@@ -61,7 +61,7 @@ body {
     background: radial-gradient(circle at 50% 100%, blue 10%, white 80%);
 }
 .pokeCard.dark {
-    background: radial-gradient(circle at 50% 100%, darkgrey 10%, white 80%);
+    background: radial-gradient(circle at 50% 100%, black 10%, white 80%);
 }
 .pokeCard.fairy {
     background: radial-gradient(circle at 50% 100%, pink 10%, white 80%);
