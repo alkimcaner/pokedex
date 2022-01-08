@@ -2,14 +2,6 @@ let pokediv = document.querySelector(".pokemons");
 let typeDropdown = document.querySelector("#poketype");
 let pokemonOffset = 0;
 
-function filterPokemons() {
-    showPokemons();
-    let cards = document.querySelectorAll(".pokeCard");
-    cards.forEach(element => {
-        console.log(element);
-    });
-}
-
 function previousPage() {
     pokemonOffset -= (pokemonOffset>=50) ? 50:0;
     showPokemons();
@@ -28,7 +20,7 @@ function createCard(pokemonName, spriteUrl, hp, attack, defense, type) {
     //change background color
     pokeCard.classList.add(type);
 
-    //elements
+    //pokemon info
     let nameElement = document.createElement("p");
     nameElement.innerHTML = pokemonName.toUpperCase();
     let spriteElement = document.createElement("img");
@@ -71,10 +63,7 @@ function showPokemons() {
             fetch(data.results[i].url)
             .then(response => response.json())
             .then(data => {
-                if(typeDropdown.value == data.types[0].type.name) {
-                    createCard(data.name, data.sprites.front_default, data.stats[0].base_stat, data.stats[1].base_stat, data.stats[2].base_stat, data.types[0].type.name);
-                }
-                else if(typeDropdown.value == "all") {
+                if(typeDropdown.value == data.types[0].type.name || typeDropdown.value == "all") {
                     createCard(data.name, data.sprites.front_default, data.stats[0].base_stat, data.stats[1].base_stat, data.stats[2].base_stat, data.types[0].type.name);
                 }
             });        
