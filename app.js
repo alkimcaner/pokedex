@@ -1,14 +1,19 @@
 let pokediv = document.querySelector(".pokemons");
 let typeDropdown = document.querySelector("#poketype");
+let pageNumber = document.querySelector("#pagenumber");
+let currentPage = 1;
+let totalPage;
 let pokemonOffset = 0;
 
 function previousPage() {
     pokemonOffset -= (pokemonOffset>=50) ? 50:0;
+    currentPage -= (currentPage>1) ? 1:0;
     showPokemons();
 }
 
 function nextPage() {
     pokemonOffset += (pokemonOffset<=999) ? 50:0;
+    currentPage += (currentPage<totalPage) ? 1:0;
     showPokemons();
 }
 
@@ -21,11 +26,12 @@ function createCard(pokemonName, spriteUrl, hp, attack, defense, type) {
     pokeCard.classList.add(type);
 
     //pokemon info
-    let nameElement = document.createElement("p");
+    let nameElement = document.createElement("h3");
     nameElement.innerHTML = pokemonName.toUpperCase();
     let spriteElement = document.createElement("img");
     spriteElement.setAttribute("src", spriteUrl);
 
+    //pokemon stats
     let stat = {
         hp: "HP: " + hp,
         attack: "ATTACK: " + attack,
@@ -58,6 +64,8 @@ function showPokemons() {
     fetch('https://pokeapi.co/api/v2/pokemon?limit=50' + '&offset=' + pokemonOffset)
     .then(response => response.json())
     .then(data => {
+        totalPage = Math.floor(data.count/50);
+        pageNumber.innerHTML = currentPage + "/" + totalPage;
         for(let i=0;i<50;i++) {
             //fetch pokemon
             fetch(data.results[i].url)

@@ -8,7 +8,12 @@
     <title>POKEDEX</title>
 </head>
 <body>
-    <h1 id="title">POKEDEX</h1>
+    <div class="topbar">
+        <a href="https://github.com/fl4wn">
+            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="">
+        </a>
+        <h1 id="title">POKEDEX</h1>
+    </div>
     <div class="filter">
         <button onclick="previousPage()">Previous</button>
         <select name="type" id="poketype" onchange="showPokemons()">
@@ -25,6 +30,7 @@
         </select>
         <button onclick="nextPage()">Next</button>
     </div>
+    <p id="pagenumber"></p>
     <div class="pokemons"></div>
     <script src="app.js"></script>
 </body>

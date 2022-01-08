@@ -9,12 +9,23 @@ body {
     background: rgb(231, 228, 196);
 }
 
-#title {
+.topbar {
     text-align: center;
     padding: 1rem;
     border-bottom: 2px solid black;
     box-shadow: 0px 5px 10px 0px rgb(163, 163, 163);
+}
 
+.topbar img {
+    width: 2rem;
+    height: 2rem;
+    position: absolute;
+    left: 1rem;
+}
+
+#pagenumber {
+    text-align: center;
+    margin: 1rem;
 }
 
 .filter {
@@ -22,6 +33,11 @@ body {
     justify-content: center;
     gap: 1rem;
     margin-top: 1rem;
+}
+
+.filter * {
+    width: 4rem;
+    height: 2rem;
 }
 
 .pokemons {
@@ -36,7 +52,7 @@ body {
     flex: 0 0 auto;
     background: radial-gradient(circle at 50% 100%, grey 10%, white 80%);
     color: black;
-    box-shadow: 0px 5px 10px 0px rgb(184, 184, 184);
+    box-shadow: 0px 5px 10px 0px rgb(165, 165, 165);
     text-align: center;
     font-size: 14pt;
     padding: 0.5rem;
