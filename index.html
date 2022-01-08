@@ -10,8 +10,20 @@
 <body>
     <h1 id="title">POKEMON CARDS</h1>
     <div class="filter">
-        <input id="number-input" placeholder="number of pokemons" type="number" min=1 max=500>
-        <button id="filter-button" onclick="filterPokemons()">OK</button>
+        <button onclick="previousPage()">Previous</button>
+        <select name="type" id="poketype" onchange="filterPokemons()">
+            <option value="all">All</option>
+            <option value="fire">Fire</option>
+            <option value="water">Water</option>
+            <option value="poison">Poison</option>
+            <option value="grass">Grass</option>
+            <option value="electric">Electric</option>
+            <option value="dark">Dark</option>
+            <option value="fairy">Fairy</option>
+            <option value="ground">Ground</option>
+            <option value="bug">Bug</option>
+        </select>
+        <button onclick="nextPage()">Next</button>
     </div>
     <div class="pokemons"></div>
     <script src="app.js"></script>
