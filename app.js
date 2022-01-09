@@ -3,21 +3,21 @@ let typeDropdown = document.querySelector("#poketype");
 let searchBox = document.querySelector("#search");
 let pokemonOffset = 0;
 let showLimit = pokemonOffset+20;
+let loadedPokemons = 0;
 
-function loadMore() {
-    showLimit += 20;
+async function loadMore() {
+    showLimit += (showLimit < await getTotalPokemonNumber()) ? 20:0;
     searchBox.value = "";
     showPokemons();
-
 }
 
 function typeChange() {
     pokediv.innerHTML = "";
+    searchBox.value = "";
     pokemonOffset = 0;
     showLimit = pokemonOffset+20;
-
+    loadedPokemons = 0;
     showPokemons();
-    searchPokemon();
 }
 
 function searchPokemon() {
@@ -83,7 +83,6 @@ async function getTotalPokemonNumber() {
 
 async function showPokemons() {
     let totalPokemon = await getTotalPokemonNumber();
-    console.log(pokemonOffset + "-" + showLimit);
     fetch('https://pokeapi.co/api/v2/pokemon?limit=' + totalPokemon)
     .then(response => response.json())
     .then(data => {
@@ -93,9 +92,17 @@ async function showPokemons() {
             .then(response => response.json())
             .then(data => {
                 if(typeDropdown.value == data.types[0].type.name || typeDropdown.value == "all") {
+                    loadedPokemons++;
                     createCard(data.name, data.sprites.front_default, data.stats[0].base_stat, data.stats[1].base_stat, data.stats[2].base_stat, data.types[0].type.name);
                 }
             });        
+        }
+
+        if (loadedPokemons<20) {
+            loadMore();
+        }
+        else {
+            loadedPokemons = 0;
         }
     });
 }
