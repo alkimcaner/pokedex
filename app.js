@@ -24,7 +24,7 @@ function searchPokemon() {
     let pokemons = document.querySelectorAll(".pokeCard");
 
     pokemons.forEach(element => {
-        if(!element.getAttribute("name").includes(searchBox.value)) {
+        if(!element.getAttribute("name").includes(searchBox.value.toLowerCase())) {
             element.classList.add("hide");
         }
         else {
