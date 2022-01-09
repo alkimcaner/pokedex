@@ -1,26 +1,26 @@
 let pokediv = document.querySelector(".pokemons");
 let typeDropdown = document.querySelector("#poketype");
 let searchBox = document.querySelector("#search");
-let pokemonOffset = 0;
+let pokemonOffset = 1;
 let showLimit = pokemonOffset+20;
-let loadedPokemons = 0;
+let totalPokemon = 898;
 
 async function loadMore() {
-    showLimit += (showLimit < await getTotalPokemonNumber()) ? 20:0;
+    showLimit += (showLimit < totalPokemon) ? 20:0;
     searchBox.value = "";
-    showPokemons();
+    await searchPokemon();
+    await fetchPokemons();
 }
 
-function typeChange() {
+async function typeChange() {
     pokediv.innerHTML = "";
     searchBox.value = "";
-    pokemonOffset = 0;
-    showLimit = pokemonOffset+20;
-    loadedPokemons = 0;
-    showPokemons();
+    pokemonOffset = 1;
+    showLimit = 1;
+    await loadMore();
 }
 
-function searchPokemon() {
+async function searchPokemon() {
     let pokemons = document.querySelectorAll(".pokeCard");
 
     pokemons.forEach(element => {
@@ -33,40 +33,36 @@ function searchPokemon() {
     });
 }
 
-function createCard(pokemonName, spriteUrl, hp, attack, defense, type) {
+function createCard(pokemon) {
     let pokeCard = document.createElement("div");
     pokeCard.className = "pokeCard";
-    pokeCard.setAttribute("name", pokemonName);
+    pokeCard.setAttribute("name", pokemon.name);
     pokediv.appendChild(pokeCard);
 
     //change background color
-    pokeCard.classList.add(type);
+    pokeCard.classList.add(pokemon.type);
 
     //pokemon info
     let nameElement = document.createElement("h3");
-    nameElement.innerHTML = pokemonName.toUpperCase();
-    let spriteElement = document.createElement("img");
-    spriteElement.setAttribute("src", spriteUrl);
+    nameElement.innerHTML = "#" + pokemon.id + " " + pokemon.name.toUpperCase();
 
-    //pokemon stats
-    let stat = {
-        hp: "HP: " + hp,
-        attack: "ATTACK: " + attack,
-        defense: "DEFENSE: " + defense,
-        type: type
-    }
+    let spriteElement = document.createElement("img");
+    spriteElement.setAttribute("src", pokemon.sprite);
 
     let statElement = document.createElement("div");
     statElement.className = "stats";
 
     let hpElement = document.createElement("p");
-    hpElement.innerHTML = stat.hp;
+    hpElement.innerHTML = "HP: " + pokemon.hp;
+
     let attackElement = document.createElement("p");
-    attackElement.innerHTML = stat.attack;
+    attackElement.innerHTML = "ATTACK: " + pokemon.attack;
+
     let defenseElement = document.createElement("p");
-    defenseElement.innerHTML = stat.defense;
+    defenseElement.innerHTML = "DEFENSE: " + pokemon.defense;
+
     let typeElement = document.createElement("p");
-    typeElement.innerHTML = stat.type.toUpperCase();
+    typeElement.innerHTML = pokemon.type.toUpperCase();
 
     //append elements to stat div
     statElement.append(typeElement, hpElement, attackElement, defenseElement);
@@ -75,36 +71,34 @@ function createCard(pokemonName, spriteUrl, hp, attack, defense, type) {
     pokeCard.append(spriteElement, nameElement, statElement)
 }
 
-async function getTotalPokemonNumber() {
-    return await fetch('https://pokeapi.co/api/v2/pokemon')
-    .then(response => response.json())
-    .then(data => data.count);
+async function fetchPokemons() {
+    //fetch pokemon
+    for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
+        let pokefetch = fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset)
+        .then(response => response.json())
+        .then(data => {
+            return {
+                name: data.name,
+                id: data.id,
+                sprite: data.sprites.front_default,
+                hp: data.stats[0].base_stat,
+                attack: data.stats[1].base_stat,
+                defense: data.stats[2].base_stat,
+                type: data.types[0].type.name
+            }
+        });
+
+        drawPokemons(await pokefetch);
+    }
 }
 
-async function showPokemons() {
-    let totalPokemon = await getTotalPokemonNumber();
-    fetch('https://pokeapi.co/api/v2/pokemon?limit=' + totalPokemon)
-    .then(response => response.json())
-    .then(data => {
-        for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
-            //fetch pokemon
-            fetch(data.results[pokemonOffset].url)
-            .then(response => response.json())
-            .then(data => {
-                if(typeDropdown.value == data.types[0].type.name || typeDropdown.value == "all") {
-                    loadedPokemons++;
-                    createCard(data.name, data.sprites.front_default, data.stats[0].base_stat, data.stats[1].base_stat, data.stats[2].base_stat, data.types[0].type.name);
-                }
-            });        
-        }
-
-        if (loadedPokemons<20) {
-            loadMore();
-        }
-        else {
-            loadedPokemons = 0;
-        }
-    });
+async function drawPokemons(pokeData) {
+    if(typeDropdown.value == await pokeData.type || typeDropdown.value == "all") {
+        createCard(pokeData);
+    }
+    else {
+        showLimit++;
+    }
 }
 
-showPokemons();
+fetchPokemons();
