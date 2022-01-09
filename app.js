@@ -1,25 +1,42 @@
 let pokediv = document.querySelector(".pokemons");
 let typeDropdown = document.querySelector("#poketype");
-let pageNumber = document.querySelector("#pagenumber");
-let currentPage = 1;
-let totalPage;
+let searchBox = document.querySelector("#search");
 let pokemonOffset = 0;
+let showLimit = pokemonOffset+20;
 
-function previousPage() {
-    pokemonOffset -= (pokemonOffset>=50) ? 50:0;
-    currentPage -= (currentPage>1) ? 1:0;
+function loadMore() {
+    showLimit += 20;
+    searchBox.value = "";
     showPokemons();
+
 }
 
-function nextPage() {
-    pokemonOffset += (pokemonOffset<=999) ? 50:0;
-    currentPage += (currentPage<totalPage) ? 1:0;
+function typeChange() {
+    pokediv.innerHTML = "";
+    pokemonOffset = 0;
+    showLimit = pokemonOffset+20;
+
     showPokemons();
+    searchPokemon();
+}
+
+function searchPokemon() {
+    let pokemons = document.querySelectorAll(".pokeCard");
+
+    pokemons.forEach(element => {
+        if(!element.getAttribute("name").includes(searchBox.value)) {
+            element.classList.add("hide");
+        }
+        else {
+            element.classList.remove("hide");
+        }
+    });
 }
 
 function createCard(pokemonName, spriteUrl, hp, attack, defense, type) {
     let pokeCard = document.createElement("div");
     pokeCard.className = "pokeCard";
+    pokeCard.setAttribute("name", pokemonName);
     pokediv.appendChild(pokeCard);
 
     //change background color
@@ -58,17 +75,21 @@ function createCard(pokemonName, spriteUrl, hp, attack, defense, type) {
     pokeCard.append(spriteElement, nameElement, statElement)
 }
 
-function showPokemons() {
-    pokediv.innerHTML = "";
-    //fetch pokemon array
-    fetch('https://pokeapi.co/api/v2/pokemon?limit=50' + '&offset=' + pokemonOffset)
+async function getTotalPokemonNumber() {
+    return await fetch('https://pokeapi.co/api/v2/pokemon')
+    .then(response => response.json())
+    .then(data => data.count);
+}
+
+async function showPokemons() {
+    let totalPokemon = await getTotalPokemonNumber();
+    console.log(pokemonOffset + "-" + showLimit);
+    fetch('https://pokeapi.co/api/v2/pokemon?limit=' + totalPokemon)
     .then(response => response.json())
     .then(data => {
-        totalPage = Math.floor(data.count/50);
-        pageNumber.innerHTML = currentPage + "/" + totalPage;
-        for(let i=0;i<50;i++) {
+        for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
             //fetch pokemon
-            fetch(data.results[i].url)
+            fetch(data.results[pokemonOffset].url)
             .then(response => response.json())
             .then(data => {
                 if(typeDropdown.value == data.types[0].type.name || typeDropdown.value == "all") {

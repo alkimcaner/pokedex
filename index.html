@@ -8,15 +8,25 @@
     <title>POKEDEX</title>
 </head>
 <body>
-    <div class="topbar">
-        <a href="https://github.com/fl4wn">
-            <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="">
-        </a>
-        <h1 id="title">POKEDEX</h1>
-    </div>
+    <header id="header">
+        <div class="h left">
+            <a href="https://github.com/fl4wn">
+                <img src="https://cdn-icons-png.flaticon.com/512/25/25231.png" alt="">
+            </a>
+        </div>
+
+        <div class="h mid">
+            <h1 id="title">POKEDEX</h1>
+        </div>
+
+        <div class="h right">
+            <h4>Made by flawn</h4>
+        </div>
+    </header>
+
     <div class="filter">
-        <button onclick="previousPage()">Previous</button>
-        <select name="type" id="poketype" onchange="showPokemons()">
+        <input type="search" name="search" placeholder="search pokemon" id="search" oninput="searchPokemon()">
+        <select name="type" id="poketype" onchange="typeChange()">
             <option value="all">All</option>
             <option value="fire">Fire</option>
             <option value="water">Water</option>
@@ -28,10 +38,9 @@
             <option value="ground">Ground</option>
             <option value="bug">Bug</option>
         </select>
-        <button onclick="nextPage()">Next</button>
     </div>
-    <p id="pagenumber"></p>
     <div class="pokemons"></div>
+    <button id="load" onclick="loadMore()">Load More</button>
     <script src="app.js"></script>
 </body>
 </html>
