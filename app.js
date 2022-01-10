@@ -7,30 +7,45 @@ let totalPokemon = 898;
 
 async function loadMore() {
     showLimit += (showLimit < totalPokemon) ? 20:0;
-    searchBox.value = "";
-    await searchPokemon();
     await fetchPokemons();
 }
 
 async function typeChange() {
     pokediv.innerHTML = "";
-    searchBox.value = "";
+    //searchBox.value = "";
     pokemonOffset = 1;
     showLimit = 1;
     await loadMore();
 }
 
-async function searchPokemon() {
-    let pokemons = document.querySelectorAll(".pokeCard");
+async function fetchPokemons() {
+    //fetch pokemon
+    for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
+        let pokefetch = fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset)
+        .then(response => response.json())
+        .then(data => {
+            return {
+                name: data.name,
+                id: data.id,
+                sprite: data.sprites.front_default,
+                hp: data.stats[0].base_stat,
+                attack: data.stats[1].base_stat,
+                defense: data.stats[2].base_stat,
+                type: data.types[0].type.name
+            }
+        });
 
-    pokemons.forEach(element => {
-        if(!element.getAttribute("name").includes(searchBox.value.toLowerCase())) {
-            element.classList.add("hide");
-        }
-        else {
-            element.classList.remove("hide");
-        }
-    });
+        drawPokemons(await pokefetch);
+    }
+}
+
+function drawPokemons(pokeData) {
+    if( (typeDropdown.value == pokeData.type || typeDropdown.value == "all") && (searchBox.value == "" || pokeData.name.includes(searchBox.value)) ) {
+        createCard(pokeData);
+    }
+    else {
+        showLimit++;
+    }
 }
 
 function createCard(pokemon) {
@@ -69,36 +84,6 @@ function createCard(pokemon) {
 
     //append elements to pokeCard div
     pokeCard.append(spriteElement, nameElement, statElement)
-}
-
-async function fetchPokemons() {
-    //fetch pokemon
-    for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
-        let pokefetch = fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset)
-        .then(response => response.json())
-        .then(data => {
-            return {
-                name: data.name,
-                id: data.id,
-                sprite: data.sprites.front_default,
-                hp: data.stats[0].base_stat,
-                attack: data.stats[1].base_stat,
-                defense: data.stats[2].base_stat,
-                type: data.types[0].type.name
-            }
-        });
-
-        drawPokemons(await pokefetch);
-    }
-}
-
-async function drawPokemons(pokeData) {
-    if(typeDropdown.value == await pokeData.type || typeDropdown.value == "all") {
-        createCard(pokeData);
-    }
-    else {
-        showLimit++;
-    }
 }
 
 fetchPokemons();
