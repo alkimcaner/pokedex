@@ -12,16 +12,16 @@ async function loadMore() {
 
 async function typeChange() {
     pokediv.innerHTML = "";
-    //searchBox.value = "";
     pokemonOffset = 1;
     showLimit = 1;
     await loadMore();
 }
 
 async function fetchPokemons() {
-    //fetch pokemon
     for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
-        let pokefetch = fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset)
+
+        //fetch pokemon
+        let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset)
         .then(response => response.json())
         .then(data => {
             return {
@@ -35,16 +35,13 @@ async function fetchPokemons() {
             }
         });
 
-        drawPokemons(await pokefetch);
-    }
-}
-
-function drawPokemons(pokeData) {
-    if( (typeDropdown.value == pokeData.type || typeDropdown.value == "all") && (searchBox.value == "" || pokeData.name.includes(searchBox.value)) ) {
-        createCard(pokeData);
-    }
-    else {
-        showLimit++;
+        //filter out the data
+        if( (typeDropdown.value == pokeData.type || typeDropdown.value == "all") && (searchBox.value == "" || pokeData.name.includes(searchBox.value)) ) {
+            createCard(pokeData);
+        }
+        else {
+            showLimit++;
+        }
     }
 }
 
@@ -64,6 +61,13 @@ function createCard(pokemon) {
     let spriteElement = document.createElement("img");
     spriteElement.setAttribute("src", pokemon.sprite);
 
+    let statElement = createStats(pokemon);
+
+    //append elements to pokeCard div
+    pokeCard.append(spriteElement, nameElement, statElement)
+}
+
+function createStats(pokemon) {
     let statElement = document.createElement("div");
     statElement.className = "stats";
 
@@ -79,11 +83,9 @@ function createCard(pokemon) {
     let typeElement = document.createElement("p");
     typeElement.innerHTML = pokemon.type.toUpperCase();
 
-    //append elements to stat div
     statElement.append(typeElement, hpElement, attackElement, defenseElement);
 
-    //append elements to pokeCard div
-    pokeCard.append(spriteElement, nameElement, statElement)
+    return statElement;
 }
 
 fetchPokemons();
