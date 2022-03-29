@@ -5,39 +5,36 @@ let pokemonOffset = 1;
 let showLimit = pokemonOffset+20;
 let totalPokemon = 898;
 
-async function loadMore() {
+function loadMore() {
     showLimit += (showLimit < totalPokemon) ? 20:0;
-    await fetchPokemons();
+    fetchPokemons();
 }
 
-async function typeChange() {
+function typeChange() {
     pokediv.innerHTML = "";
     pokemonOffset = 1;
     showLimit = 1;
-    await loadMore();
+    loadMore();
 }
 
 async function fetchPokemons() {
     for(pokemonOffset;pokemonOffset<showLimit;pokemonOffset++) {
-
         //fetch pokemon
-        let pokeData = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset)
-        .then(response => response.json())
-        .then(data => {
-            return {
-                name: data.name,
-                id: data.id,
-                sprite: data.sprites.front_default,
-                hp: data.stats[0].base_stat,
-                attack: data.stats[1].base_stat,
-                defense: data.stats[2].base_stat,
-                type: data.types[0].type.name
-            }
-        });
+        let pokeFetch = await fetch('https://pokeapi.co/api/v2/pokemon/' + pokemonOffset);
+        let pokeData = await pokeFetch.json();
+        let pokeObject = {
+            name: pokeData.name,
+            id: pokeData.id,
+            sprite: pokeData.sprites.front_default,
+            hp: pokeData.stats[0].base_stat,
+            attack: pokeData.stats[1].base_stat,
+            defense: pokeData.stats[2].base_stat,
+            type: pokeData.types[0].type.name
+        };
 
         //filter out the data
-        if( (typeDropdown.value == pokeData.type || typeDropdown.value == "all") && (searchBox.value == "" || pokeData.name.includes(searchBox.value)) ) {
-            createCard(pokeData);
+        if( (typeDropdown.value == pokeObject.type || typeDropdown.value == "all") && (searchBox.value == "" || pokeObject.name.includes(searchBox.value)) ) {
+            createCard(pokeObject);
         }
         else {
             showLimit++;
